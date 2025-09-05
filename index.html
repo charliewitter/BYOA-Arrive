@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrive - Find Your Peace</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="ripple-container"></div>
+    
+    <div class="main-wrapper">
+        <!-- Top scroll area with hint -->
+        <div class="scroll-spacer">
+            <div class="scroll-hint">
+                <p>Welcome to your meditation space</p>
+                <p>Scroll down to begin your journey</p>
+                <div class="scroll-hint-icon">↓</div>
+            </div>
+        </div>
+        
+        <!-- Main content section -->
+        <div class="content-section">
+            <div class="container">
+                <header>
+                    <h1>🧘‍♀️ Arrive</h1>
+                    <p class="subtitle">Find your inner peace, one breath at a time</p>
+                </header>
+
+        <main>
+            <!-- Intention Setting -->
+            <section class="intention-section">
+                <label for="intention">Set Your Intention</label>
+                <input 
+                    type="text" 
+                    id="intention" 
+                    placeholder="What would you like to focus on today?"
+                    maxlength="100"
+                >
+                <div id="intention-display" class="intention-display hidden"></div>
+            </section>
+
+            <!-- Timer Display -->
+            <section class="timer-section">
+                <div class="timer-display">
+                    <span id="timer">30:00</span>
+                </div>
+                
+                <!-- Time Controls -->
+                <div class="time-controls">
+                    <button id="decrease-time" class="time-btn">-5 min</button>
+                    <span id="current-duration">30 minutes</span>
+                    <button id="increase-time" class="time-btn">+5 min</button>
+                </div>
+
+                <!-- Interval Bell Option -->
+                <div class="interval-option">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="interval-bell">
+                        <span class="checkmark"></span>
+                        Interval bell (halfway through)
+                    </label>
+                </div>
+            </section>
+
+            <!-- Control Buttons -->
+            <section class="controls">
+                <button id="start-btn" class="primary-btn">Begin Meditation</button>
+                <button id="pause-btn" class="secondary-btn hidden">Pause</button>
+                <button id="reset-btn" class="secondary-btn">Reset</button>
+            </section>
+
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+
+            <!-- Session Log -->
+            <section id="session-log-container" class="session-log-container" style="display: none;">
+                <h3>Today's Sessions</h3>
+                <div id="session-log" class="session-log"></div>
+                <button id="clear-log" class="clear-btn">Clear Log</button>
+            </section>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="start-gong" preload="auto">
+        <source src="sounds/start-gong.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="end-gong" preload="auto">
+        <source src="sounds/end-gong.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="interval-chime" preload="auto">
+        <source src="sounds/interval-chime.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
