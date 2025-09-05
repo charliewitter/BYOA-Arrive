@@ -24,13 +24,22 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--background-gradient-animated);
     background-size: 200% 200%;
+    background-attachment: fixed; /* Keep background fixed during scroll */
     animation: gradientShift 20s ease infinite;
-    min-height: 200vh; /* Increased height to enable scrolling */
+    min-height: 100vh;
     color: var(--text-primary);
     position: relative;
     overflow-x: hidden;
     margin: 0;
     padding: 0;
+}
+
+/* Ensure html element also has the background */
+html {
+    background: var(--background-gradient-animated);
+    background-size: 200% 200%;
+    background-attachment: fixed;
+    animation: gradientShift 20s ease infinite;
 }
 
 /* Main container wrapper for scroll positioning */
@@ -39,6 +48,7 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
+    background: transparent; /* Ensure wrapper doesn't block the background */
 }
 
 /* Top spacer section for initial scroll area */
