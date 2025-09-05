@@ -22,9 +22,11 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #667eea; /* Fallback solid color */
     background: var(--background-gradient-animated);
     background-size: 200% 200%;
     background-attachment: fixed; /* Keep background fixed during scroll */
+    background-repeat: no-repeat;
     animation: gradientShift 20s ease infinite;
     min-height: 100vh;
     color: var(--text-primary);
@@ -40,11 +42,13 @@ html {
     background-size: 200% 200%;
     background-attachment: fixed;
     animation: gradientShift 20s ease infinite;
+    min-height: 100%;
+    height: 100%;
 }
 
 /* Main container wrapper for scroll positioning */
 .main-wrapper {
-    min-height: 200vh;
+    min-height: 200vh; /* Back to original height */
     display: flex;
     flex-direction: column;
     position: relative;
@@ -79,12 +83,13 @@ html {
 
 /* Content section that contains the timer */
 .content-section {
-    min-height: 100vh;
+    min-height: 100vh; /* Back to original height */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
     position: relative;
+    padding-bottom: 10vh; /* Small buffer to prevent white space */
 }
 
 /* Ripple effect container */
@@ -351,6 +356,49 @@ header h1 {
     border-radius: 3px;
 }
 
+/* Meditation Stats */
+.stats-section {
+    margin-bottom: 32px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid rgba(107, 115, 255, 0.1);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 115, 255, 0.15);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* Session Log */
 .session-log-container {
     text-align: left;
@@ -403,9 +451,15 @@ header h1 {
     margin-top: 4px;
 }
 
+.log-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
 .clear-btn {
-    width: 100%;
-    padding: 8px;
+    flex: 1;
+    padding: 8px 16px;
     background: #e74c3c;
     color: white;
     border: none;
@@ -417,6 +471,12 @@ header h1 {
 
 .clear-btn:hover {
     background: #c0392b;
+}
+
+#view-all-stats {
+    flex: 1;
+    padding: 8px 16px;
+    font-size: 0.9rem;
 }
 
 /* Utility Classes */

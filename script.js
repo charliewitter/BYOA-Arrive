@@ -9,11 +9,19 @@ class MeditationTimer {
         this.timerInterval = null;
         this.startTime = null;
         this.sessions = JSON.parse(localStorage.getItem('meditationSessions')) || [];
+        this.stats = JSON.parse(localStorage.getItem('meditationStats')) || {
+            totalMinutes: 0,
+            totalSessions: 0,
+            streak: 0,
+            lastSessionDate: null,
+            allTimeSessions: []
+        };
         
         this.initializeElements();
         this.bindEvents();
         this.updateDisplay();
         this.loadSessions();
+        this.updateStatsDisplay();
     }
 
     initializeElements() {
@@ -43,6 +51,13 @@ class MeditationTimer {
         this.sessionLogContainer = document.getElementById('session-log-container');
         this.sessionLog = document.getElementById('session-log');
         this.clearLogBtn = document.getElementById('clear-log');
+        this.viewAllStatsBtn = document.getElementById('view-all-stats');
+        
+        // Stats elements
+        this.totalMinutesElement = document.getElementById('total-minutes');
+        this.sessionsCountElement = document.getElementById('sessions-count');
+        this.currentStreakElement = document.getElementById('current-streak');
+        this.averageSessionElement = document.getElementById('average-session');
         
         // Body element for timer running class
         this.body = document.body;
@@ -55,6 +70,7 @@ class MeditationTimer {
         this.decreaseBtn.addEventListener('click', () => this.adjustTime(-5));
         this.increaseBtn.addEventListener('click', () => this.adjustTime(5));
         this.clearLogBtn.addEventListener('click', () => this.clearSessions());
+        this.viewAllStatsBtn.addEventListener('click', () => this.showDetailedStats());
         
         // Intention input handling
         this.intentionInput.addEventListener('input', () => this.updateIntentionDisplay());
@@ -199,24 +215,77 @@ class MeditationTimer {
     }
 
     logSession() {
+        const now = new Date();
+        const sessionMinutes = this.currentDuration / 60;
+        const today = now.toDateString();
+        
         const session = {
             id: Date.now(),
             duration: this.currentDuration,
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            date: now.toLocaleDateString(),
+            time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             intention: this.intentionInput.value.trim() || null,
-            completed: true
+            completed: true,
+            timestamp: now.getTime()
         };
         
-        this.sessions.unshift(session); // Add to beginning of array
-        
-        // Keep only last 10 sessions
+        // Update recent sessions for display
+        this.sessions.unshift(session);
         if (this.sessions.length > 10) {
             this.sessions = this.sessions.slice(0, 10);
         }
         
+        // Update all-time statistics
+        this.stats.totalMinutes += sessionMinutes;
+        this.stats.totalSessions += 1;
+        this.stats.allTimeSessions.push(session);
+        
+        // Update streak
+        this.updateStreak(today);
+        
+        // Save to localStorage
         localStorage.setItem('meditationSessions', JSON.stringify(this.sessions));
+        localStorage.setItem('meditationStats', JSON.stringify(this.stats));
+        
         this.loadSessions();
+        this.updateStatsDisplay();
+    }
+
+    updateStreak(today) {
+        const lastSessionDate = this.stats.lastSessionDate;
+        
+        if (!lastSessionDate) {
+            // First session ever
+            this.stats.streak = 1;
+        } else {
+            const lastDate = new Date(lastSessionDate);
+            const todayDate = new Date(today);
+            const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                // Same day, keep streak
+                // Don't increment streak for multiple sessions on same day
+            } else if (diffDays === 1) {
+                // Consecutive day, increment streak
+                this.stats.streak += 1;
+            } else {
+                // Missed days, reset streak
+                this.stats.streak = 1;
+            }
+        }
+        
+        this.stats.lastSessionDate = today;
+    }
+
+    updateStatsDisplay() {
+        this.totalMinutesElement.textContent = Math.round(this.stats.totalMinutes);
+        this.sessionsCountElement.textContent = this.stats.totalSessions;
+        this.currentStreakElement.textContent = this.stats.streak;
+        
+        const avgMinutes = this.stats.totalSessions > 0 
+            ? Math.round(this.stats.totalMinutes / this.stats.totalSessions)
+            : 0;
+        this.averageSessionElement.textContent = avgMinutes;
     }
 
     loadSessions() {
@@ -258,11 +327,86 @@ class MeditationTimer {
     }
 
     clearSessions() {
-        if (confirm('Are you sure you want to clear all meditation sessions?')) {
+        if (confirm('Are you sure you want to clear all meditation data? This will reset your total minutes, sessions, and streak.')) {
             this.sessions = [];
+            this.stats = {
+                totalMinutes: 0,
+                totalSessions: 0,
+                streak: 0,
+                lastSessionDate: null,
+                allTimeSessions: []
+            };
             localStorage.removeItem('meditationSessions');
+            localStorage.removeItem('meditationStats');
             this.loadSessions();
+            this.updateStatsDisplay();
         }
+    }
+
+    showDetailedStats() {
+        const hours = Math.floor(this.stats.totalMinutes / 60);
+        const minutes = Math.round(this.stats.totalMinutes % 60);
+        const timeString = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+        
+        const longestStreak = this.calculateLongestStreak();
+        const thisWeekMinutes = this.getThisWeekMinutes();
+        const thisMonthMinutes = this.getThisMonthMinutes();
+        
+        alert(`🧘‍♀️ Your Meditation Journey
+
+Total Time: ${timeString} (${Math.round(this.stats.totalMinutes)} minutes)
+Total Sessions: ${this.stats.totalSessions}
+Current Streak: ${this.stats.streak} days
+Longest Streak: ${longestStreak} days
+
+This Week: ${Math.round(thisWeekMinutes)} minutes
+This Month: ${Math.round(thisMonthMinutes)} minutes
+Average Session: ${Math.round(this.stats.totalMinutes / this.stats.totalSessions || 0)} minutes
+
+Keep up the great work! 🙏`);
+    }
+
+    calculateLongestStreak() {
+        if (this.stats.allTimeSessions.length === 0) return 0;
+        
+        const sessions = this.stats.allTimeSessions.sort((a, b) => a.timestamp - b.timestamp);
+        let longestStreak = 1;
+        let currentStreak = 1;
+        let lastDate = new Date(sessions[0].timestamp).toDateString();
+        
+        for (let i = 1; i < sessions.length; i++) {
+            const currentDate = new Date(sessions[i].timestamp).toDateString();
+            const daysDiff = Math.floor((new Date(currentDate) - new Date(lastDate)) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff === 0) {
+                // Same day, don't increment
+                continue;
+            } else if (daysDiff === 1) {
+                // Consecutive day
+                currentStreak++;
+            } else {
+                // Gap in days
+                longestStreak = Math.max(longestStreak, currentStreak);
+                currentStreak = 1;
+            }
+            lastDate = currentDate;
+        }
+        
+        return Math.max(longestStreak, currentStreak);
+    }
+
+    getThisWeekMinutes() {
+        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        return this.stats.allTimeSessions
+            .filter(session => session.timestamp > oneWeekAgo)
+            .reduce((total, session) => total + (session.duration / 60), 0);
+    }
+
+    getThisMonthMinutes() {
+        const oneMonthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+        return this.stats.allTimeSessions
+            .filter(session => session.timestamp > oneMonthAgo)
+            .reduce((total, session) => total + (session.duration / 60), 0);
     }
 
     showCompletionMessage() {

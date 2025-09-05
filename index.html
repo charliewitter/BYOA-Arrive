@@ -76,11 +76,36 @@
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
 
+            <!-- Meditation Stats -->
+            <section class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-minutes">0</div>
+                        <div class="stat-label">Total Minutes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="sessions-count">0</div>
+                        <div class="stat-label">Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="current-streak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="average-session">0</div>
+                        <div class="stat-label">Avg Minutes</div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Session Log -->
             <section id="session-log-container" class="session-log-container" style="display: none;">
-                <h3>Today's Sessions</h3>
+                <h3>Recent Sessions</h3>
                 <div id="session-log" class="session-log"></div>
-                <button id="clear-log" class="clear-btn">Clear Log</button>
+                <div class="log-actions">
+                    <button id="view-all-stats" class="secondary-btn">View All Stats</button>
+                    <button id="clear-log" class="clear-btn">Clear Log</button>
+                </div>
             </section>
                 </main>
             </div>
